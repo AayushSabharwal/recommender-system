@@ -12,7 +12,7 @@ for it in range(1000):
     g.add_edge(a, b)
 gt.random_rewire(g, model='erdos', n_iter=1000)
 
-n = 10   # number of walks
+# n = 10   # number of walks
 
 
 def walk(vertex):
@@ -32,18 +32,19 @@ def walk(vertex):
     return fvp.a
 
 
-with Pool(n) as p:
-    # walk from node 1 n times
-    maps = p.map(walk, [1 for i in range(n)])
-    # add the resultant frequency arrays into one
-    result = np.ndarray(100, dtype=int)
-    for vmap in maps:
-        result += vmap
+def run_walk(n):
+    with Pool(n) as p:
+        # walk from node 1 n times
+        maps = p.map(walk, [1 for i in range(n)])
+        # add the resultant frequency arrays into one
+        result = np.ndarray(100, dtype=int)
+        for vmap in maps:
+            result += vmap
 
-    # set the frequency into a map
-    freq = g.new_vertex_property('int', vals=result)
-    labels = g.new_vertex_property('string', vals=list(range(100)))
+        # set the frequency into a map
+        freq = g.new_vertex_property('int', vals=result)
+        labels = g.new_vertex_property('string', vals=list(range(100)))
 
-    # drawing
-    pos = gt.radial_tree_layout(g, 1)
-    gt.graph_draw(g, pos, vertex_fill_color=freq, vcmap=cm.viridis, vprops={'text': labels})
+        # drawing
+        pos = gt.radial_tree_layout(g, 1)
+        gt.graph_draw(g, pos, vertex_fill_color=freq, vcmap=cm.viridis, vprops={'text': labels})
