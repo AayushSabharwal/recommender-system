@@ -43,7 +43,6 @@ with open('reverse_mapping.json') as infile:
     reverse_mapping = json.load(infile)
 
 # how many iterations to walk for
-walk_length = 100000
 
 
 def walk(vertex: int):
@@ -51,6 +50,7 @@ def walk(vertex: int):
     Does a random walk from starting vertex
     """
     reset_probability = 0.2
+    walk_length = 100000
     # creating the vertex property map for frequency
     fvp = g.new_vertex_property('int', val=0)
     # getting the corresponding vertex
