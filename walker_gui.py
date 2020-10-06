@@ -15,14 +15,14 @@ class WalkerApp(tk.Frame):
         self.rowconfigure(3, pad=3, weight=1)
 
         self.movies_label = tk.Label(text="Names of movies, one movie per line")
-        self.movies_label.grid(row=0, column=0, sticky=tk.EW)
+        self.movies_label.grid(row=0, column=0)
         self.movies = scrolledtext.ScrolledText()
-        self.movies.grid(row=1, column=0, sticky=tk.EW)
+        self.movies.grid(row=1, column=0)
 
         self.weights_label = tk.Label(text="Weight of each movie, one int per line")
-        self.weights_label.grid(row=0, column=1, sticky=tk.EW)
+        self.weights_label.grid(row=0, column=1)
         self.weights = scrolledtext.ScrolledText()
-        self.weights.grid(row=1, column=1, sticky=tk.EW)
+        self.weights.grid(row=1, column=1)
 
         self.run_button = tk.Button()
         self.run_button["text"] = "Run walk"
