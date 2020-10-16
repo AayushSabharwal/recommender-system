@@ -13,16 +13,19 @@ id_format="tt{}"
 # 0th index is not the id, omit that 
 final={'Title':[],'Genre':[],'Tags':[],'Director':[],'Cast':[],'Language':[],'Rating':[]}
 for ids in imdb_id[a:b]:
-    test=id_format.format(ids)
-    titles,genres,keywords,c,d,e,f=scraper.credentials(test)
-    final['Title'].append(titles)
-    final['Genre'].append(genres)
-    final['Tags'].append(keywords)
-    final['Director'].append(c)
-    final['Cast'].append(d)
-    final['Language'].append(e)
-    final['Rating'].append(f)
-    print("Scraped out",titles)
+    try:
+        test=id_format.format(ids)
+        titles,genres,keywords,c,d,e,f=scraper.credentials(test)
+        final['Title'].append(titles)
+        final['Genre'].append(genres)
+        final['Tags'].append(keywords)
+        final['Director'].append(c)
+        final['Cast'].append(d)
+        final['Language'].append(e)
+        final['Rating'].append(f)
+        print("Scraped out",titles)
+    except:
+        print(test,"is throwing an error")
 pd1=pd.DataFrame(final)
 compression_opts = dict(method='zip',
                         archive_name='out.csv') 
