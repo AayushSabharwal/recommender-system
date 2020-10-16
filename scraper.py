@@ -1,3 +1,6 @@
+import requests
+import lxml
+import bs4
 def credentials(movie_id):
     ''' Takes as input movie_id
         Returns list of genres, keywords, cast
@@ -49,11 +52,20 @@ def credentials(movie_id):
     # Scraping out the language of the movie
     language=soup.find('div',{'class':'article','id':'titleDetails'})
     language=language.find_all('div',{'class':'txt-block'})
-    language=language[1].find('a').getText()
+    var=0
+    language_final='N/A'
+    while(var<4):
+        lang=language[var].find('h4').getText()
+        if(lang=="Language:"):
+            language=language[var].find('a').getText()
+            language_final=language
+            break
+        else:
+            var+=1
     
     #Scraping out rating of the movie
     rating=soup.find('div',{'class':'ratingValue'})
     rating=float(rating.find('span').getText())
     
     # Returning the values
-    return genre_final,keywords_final[:-1],director,cast_final,language,rating
+    return genre_final,keywords_final[:-1],director,cast_final,language_final,rating
