@@ -4,7 +4,7 @@ import bs4
 def credentials(movie_id):
     ''' Takes as input movie_id
         Returns list of genres, keywords, cast
-        Returns director, language, rating'''
+        Returns title,director, language, rating'''
     
     # Initial lists and values to return
     genre_final=[]
@@ -13,14 +13,18 @@ def credentials(movie_id):
     director=''
     language=''
     rating=0
-    
+    title=''
+
     
     # Requesting page URL of the given movie id
     web_link="https://www.imdb.com/title/{}/"
     web_link=web_link.format(movie_id)
     req=requests.get(web_link)
     soup=bs4.BeautifulSoup(req.text,'lxml')
-    
+
+    # Find the title of the movie
+    title=soup.find('div',{'class':'title_wrapper'})
+    title=title.find('h1').getText()
     
     # Scraping out Genres from the Page URL
     genres=soup.find_all('div',{'class':'canwrap'})
@@ -68,4 +72,4 @@ def credentials(movie_id):
     rating=float(rating.find('span').getText())
     
     # Returning the values
-    return genre_final,keywords_final[:-1],director,cast_final,language_final,rating
+    return title,genre_final,keywords_final[:-1],director,cast_final,language_final,rating
