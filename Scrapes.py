@@ -6,7 +6,7 @@ data=reader(data)
 data=list(data)
 imdb_id=[]
 for ids in data:
-    imdb_id.append((ids[1],ids[2]))
+    imdb_id.append((ids[1],ids[0]))
 a=int(input("Enter the starting index of the movie (this index is included) "))
 b=int(input("Enter the ending index of the movie (this index is excluded) "))
 id_format="tt{}"
