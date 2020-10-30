@@ -18,16 +18,19 @@ for file in files:
     df = df.merge(mv, left_on='ID', right_on='movieId').drop(['IMDB', 'ID', 'Title'], axis=1)
     df = df.astype({col: 'string' for col in df.columns if df.dtypes[col] == 'object'})[
         ['movieId', 'imdbId', 'title', 'Language', 'year', 'Director', 'Tags', 'Cast', 'genres', 'Genre', 'Rating']]
-    df = df[df.year >= 1990]
+    df = df[df.year >= 1990].dropna(axis=0)
+    df = df[df.Language.isin(['English', 'Hindi', 'Urdu', 'Punjabi'])]
     df = df.assign(genres=[[x[1:-1] for x in re.findall(r'\'.*?\'', y)] for y in df.genres],
-                   Genre=[[x[1:-1] for x in re.findall(r'\'.*?\'', y)] for y in df.Genre],
-                   Cast=[[x[1:-1] for x in re.findall(r'\'.*?\'', y)] for y in df.Cast],
-                   Tags=[[x[1:-1] for x in re.findall(r'\'.*?\'', y)] for y in df.Tags])
+                   Genre=[[x[1:-1] for x in re.findall(r'\'.*?\'', y)] for y in df.Genre])
     df = df.assign(genres=[list(set(x) | set(y)) for x, y in zip(df.genres, df.Genre)])\
         .drop('Genre', axis=1)
     df = df.assign(genres=['/'.join(x) for x in df.genres],
-                   Cast=['|'.join(x) for x in df.Cast],
-                   Tags=['|'.join(x) for x in df.Tags])\
+                   Cast=df.Cast.str.replace('[', '').str.replace(']', '').str.split(', '),
+                   Tags=df.Tags.str.replace('[', '').str.replace(']', '').str.split(', '))
+    df = df.assign(Cast=[list(set([x[1:-1] for x in c])) for c in df.Cast],
+                   Tags=[list(set([x[1:-1] for x in t])) for t in df.Tags])
+    df = df.assign(Cast=['||'.join(c) for c in df.Cast],
+                   Tags=['||'.join(t) for t in df.Tags])\
         .rename(columns={
             'Cast': 'cast',
             'Tags': 'tags',
