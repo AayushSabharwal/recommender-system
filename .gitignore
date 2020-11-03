@@ -3,3 +3,7 @@ ratings.csv
 new_ratings.csv
 timeless_ratings.csv
 __pycache__/
+.ipynb_checkpoints/
+*.hdf5
+*.npy
+*.npz
