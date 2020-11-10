@@ -6,4 +6,3 @@ __pycache__/
 .ipynb_checkpoints/
 *.hdf5
 *.npy
-*.npz
