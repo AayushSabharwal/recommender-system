@@ -18,9 +18,9 @@ del us
 del pd
 
 @numba.njit(parallel=True)
-def makeumat(uu, nmv, start, end):
+def makeumat(uu, nmv):
     msim = np.zeros((nmv, nmv))
-    for i in range(start, end):
+    for i in range(nmv-1):
         col = uu[:, i]
         for j in range(i+1, nmv):
             msim[i, j] += np.linalg.norm(col-uu[:, j])
@@ -32,10 +32,5 @@ u2id = {uids[i]:i for i in range(len(uids))}
 for i in range(len(rtu)):
     uu[u2id[rtu[i]], mv2id2[rtm[i]]] = rtr[i]
 
-print('Enter starting index')
-st = int(input())
-print('Enter ending index')
-en = int(input())
-
-msim = makeumat(uu, len(mv2id2), st, en)
+msim = makeumat(uu, len(mv2id2))
 np.savez_compressed('user-similarity.npz', msim)
