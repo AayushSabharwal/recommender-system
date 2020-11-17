@@ -7,24 +7,19 @@ cm = pd.read_csv('Movie_data_cleaned.csv')
 with open('movie-id-map2.pkl', 'rb') as f:
     mv2id = pickle.load(f)
 
-dist = set(cm.director)
-print(f"ndir {len(dist)}")
-dist = list(dist)
-p2id = {dist[i]: i for i in range(len(dist))}
-psim = np.zeros((len(dist), len(mv2id)), dtype='f4')
+a = np.zeros((23843), dtype='<U35')
 for mv, it in cm[['movieId', 'director']].dropna().itertuples(index=False):
-	psim[p2id[it], mv2id[mv]] += 1
+	a[mv2id[mv]] = it
 print('done psim')
 
 @numba.jit(nopython=True, parallel=True)
 def other_half_similarity(sim, start, end):
     print('Entered')
-    nmv = sim.shape[1]
+    nmv = 23843
     msim = np.zeros(shape=(nmv, nmv), dtype=numba.float32)
     for i in range(start, end):
-        col = sim[:, i]
         for j in range(i+1, nmv):
-            msim[i, j] += np.linalg.norm(col-sim[:, j])
+            msim[i, j] = sim[i] == sim[j]
         print('done', i)
     return msim
 
@@ -33,4 +28,4 @@ start = int(input())
 print('Enter end index')
 end = int(input())
 
-np.savez_compressed('director-similarity.npz', other_half_similarity(psim, start, end))
+np.savez_compressed('director-similarity.npz', other_half_similarity(a, start, end))
