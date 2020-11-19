@@ -11,14 +11,14 @@ c=user_id.subset([180079,180075])
 
 
 def subset(movieID):
-    count=pd.read_csv('Len_movies.csv',index_col=False)
-    genre=pd.read_csv('Movie_data_cleaned.csv')
+    count=pd.read_csv('processed_data/Len_movies.csv',index_col=False)
+    genre=pd.read_csv('processed_data/cleaned_subsetted_movies.csv')
     genre=genre.set_index('movieId')
     genres=[]
     for x in movieID:
         genress=genre._get_value(x,'genres').split("/")
         genres.extend(genress)
-    normalized=pd.read_csv("Scores_Normalized.csv",index_col=False)
+    normalized=pd.read_csv("processed_data/Scores_Normalized.csv",index_col=False)
     subdataframe=normalized[genres]
     subdataframe=subdataframe.copy()
     subdataframe['sum'] = subdataframe[list(subdataframe.columns)].sum(axis=1)
