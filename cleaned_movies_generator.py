@@ -1,6 +1,6 @@
 import re
 import pandas as pd
-
+from pathlib import Path
 
 def get_year(title):
     matches = re.findall(r'\([0-2][0-9][0-9][0-9]\)$', title)
@@ -19,8 +19,8 @@ def fix_the(title):
     else:
         return title
 
-
-raw_mv = pd.read_csv('./ml-25m/movies.csv')
+cur_dir = Path(__file__)
+raw_mv = pd.read_csv(cur_dir.parent / './ml-25m/movies.csv')
 # just some unicode things, to resolve spaces. Then, strip all whitespace from ends
 raw_mv.title = raw_mv.title.str.replace('\xa0', ' ').str.strip()
 # get the year and remove all content in parentheses from title
@@ -34,10 +34,10 @@ raw_mv = raw_mv.assign(title=[fix_the(t) for t in raw_mv.title])
 # makes more sense for missing values to be represented this way
 raw_mv.genres = raw_mv.genres.astype('string').str.replace('(no genres listed)', 'NA')
 
-links = pd.read_csv('links.csv')
+links = pd.read_csv(cur_dir.parent / './processed_data/links.csv')
 # tmdb Id is not necessary
 links = links.drop('tmdbId', axis=1)
 # final merged dataset
 cleaned_mv = links.merge(raw_mv, left_on='movieId', right_on='movieId')
 # save to file
-cleaned_mv.to_csv('./ml-25m/cleaned_movies.csv', index=False)
+cleaned_mv.to_csv(cur_dir.parent / './ml-25m/clean_movies.csv', index=False)
