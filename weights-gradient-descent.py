@@ -1,7 +1,8 @@
 import numpy as np
 from scipy import optimize as op
 
-similarity_files = ['all_similarities/director-similarity', 'all_similarities/genre-similarity', 'all_similarities/rating-similarity', 'all_similarities/tags-similarity']
+similarity_files = ['all_similarities/director-similarity', 'all_similarities/genre-similarity', 
+                    'all_similarities/tags-similarity', 'all_similarities/language-similarity']
 with np.load('all_similarities/user-similarity.npz', 'r') as npf:
     usim = npf['arr_0']
 adj_mat = np.zeros((23843, 23843), dtype='f4')
@@ -34,9 +35,7 @@ weights = np.array(inp, dtype='f4')
 # standard BFGS, no contstraints on the weights
 res = op.minimize(weightfn, weights, method='BFGS', options={'disp': True}, args=(adj_mat, ))
 # L-BFGS-B, constrains values to be > 0
-#res = op.minimize(weightfn, weights, hess=hessfn, method='L-BFGS-B', options={'disp': True}, args=(adj_mat, ), bounds=op.Bounds([0., 0., 0.], [np.inf, np.inf, np.inf]))
-# trust-constr, constrains weights to be > 0 and sum to 1
-#res = op.minimize(weightfn, weights, hess=hessfn, method='trust-constr', options={'disp': True}, args=(adj_mat, ), bounds=op.Bounds([0., 0., 0.], [np.inf, np.inf, np.inf]), constraints=[op.LinearConstraint([1, 1, 1], [1], [1])])
+#res = op.minimize(weightfn, weights, hess=hessfn, method='L-BFGS-B', options={'disp': True}, args=(adj_mat, ), bounds=op.Bounds([0., 0., 0., 0.], [np.inf, np.inf, np.inf, np.inf]))
 print('final fn value', res.fun)
 print('final x value', res.x)
 np.save('final_weights.npy', res.x)
