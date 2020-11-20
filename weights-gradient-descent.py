@@ -20,7 +20,7 @@ def weightfn(x, *args):
 #    ret = np.linalg.norm(adj_mat)
     #uncomment below two lines for absolute difference similarity
     np.abs(adj_mat, out=adj_mat)
-    ret = adj_mat.sum()
+    ret = adj_mat.sum(dtype='f8')
     print(ret, ret/(23843*23843))
     return ret
 
