@@ -6,7 +6,9 @@ from fuzzywuzzy import process
 import pickle
 
 # list of all movies, for fuzzy matching
-all_movies = list(pd.read_csv('processed_data/cleaned_subsetted_movies.csv').title)
+all_movies_info=pd.read_csv('processed_data/cleaned_subsetted_movies.csv')
+all_movies = list(all_movies_info.title)
+all_movies_info=all_movies_info.set_index('movieId')
 # map of movie name to it's movieId
 title_to_id = pickle.load(open('movie_name_map.pkl', 'rb'))
 # map of movieId to title
@@ -80,12 +82,36 @@ def get_recommendations(movie_names: List[str]):
     # userIds whose movies to iterate through
     user_ids = user_id.subset(movie_ids)
     # get movies of those users
-    chosen_movies = set()
+    chosen_movies = []
     for uid in user_ids:
-        chosen_movies |= set(user_to_movies[uid])
+        chosen_movies.extend(user_to_movies[uid])
     # run pagerank
-    pr = pagerank(list(chosen_movies))
+    pr = pagerank(chosen_movies)
     # sort the pairs by pagerank and return the 5 largest values
     movie_tuples = [(pr[mv], mv) for mv in pr]
     movie_tuples.sort()
     return [id_to_title[i[1]] for i in movie_tuples[-5:]]
+
+def get_info(name):
+    """
+    Gathers the info. of the movie entered by the user
+
+    Parameters
+    ----------
+    Name of a movie. Fuzzy Matched to the dataset.
+
+    Returns
+    -------
+    String of relevant information
+    """
+
+    # for each movie name provided, find the closest match in list of movies through fuzzy searching
+    movie_name = process.extractOne(name, all_movies)[0]
+    # movieId for each movie
+    movie_ids = title_to_id[movie_name]
+    # Organize the data in a printable format
+    movie_detail=list(all_movies_info.loc[movie_ids, ['imdbId','title','year','rating','language','genres','director','cast','tags'] ])
+    template="Title : {}\nIMDB ID : {}\nYear : {}\nRating : {}\nLanguage : {}\nGenres : {}\nDirector : {}\nCast : {}\nTags : {}"
+    final=template.format(movie_detail[1],movie_detail[0],movie_detail[2],movie_detail[3],movie_detail[4],movie_detail[5].replace("/",", "),movie_detail[6],movie_detail[7].replace("/",", "),movie_detail[8].replace("/",", "))
+
+    return final
