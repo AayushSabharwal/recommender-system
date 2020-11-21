@@ -30,7 +30,9 @@ def pagerank(movie_ids: List[int], input_ids: List[int], epsilon: float = 1e-4, 
             Maximum delta between interations for convergence to have been achieved
         maxiterations:
             Maximum number of iterations pagerank will be run for
-    
+        reset_chance:
+            Reset probability for the pagerank to return to starting nodes
+
     Returns
     -------
         pr: Dict[int, float]
@@ -75,8 +77,8 @@ def get_recommendations(movie_names: List[str]):
     
     Returns
     -------
-        recommendations: List[int]
-            MovieID and rating for top 5 recommended movies
+        recommendations: List[(string, float)]
+            Movie title and recommendation percent for top 5 recommended movies
     """
     # for each movie name provided, find the closest match in list of movies through fuzzy searching
     movie_names = [process.extractOne(name, all_movies)[0] for name in movie_names]
@@ -112,7 +114,7 @@ def get_info(name: str):
 
     Returns
     -------
-    String of relevant information
+        String of relevant information
     """
 
     # for each movie name provided, find the closest match in list of movies through fuzzy searching
