@@ -80,11 +80,11 @@ def get_recommendations(movie_names: List[str]):
     # userIds whose movies to iterate through
     user_ids = user_id.subset(movie_ids)
     # get movies of those users
-    chosen_movies = []
+    chosen_movies = set()
     for uid in user_ids:
-        chosen_movies.extend(user_to_movies[uid])
+        chosen_movies |= set(user_to_movies[uid])
     # run pagerank
-    pr = pagerank(chosen_movies)
+    pr = pagerank(list(chosen_movies))
     # sort the pairs by pagerank and return the 5 largest values
     movie_tuples = [(pr[mv], mv) for mv in pr]
     movie_tuples.sort()
