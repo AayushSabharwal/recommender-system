@@ -1,5 +1,0 @@
-already have - movie, date, tags, genre
-
-scrape - director, cast, keywords, rating, language
-
-filter by language
