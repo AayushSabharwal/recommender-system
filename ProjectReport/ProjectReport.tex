@@ -2,7 +2,7 @@
 
     \usepackage[breakable]{tcolorbox}
     \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
-    
+    \usepackage{sidecap}
     \usepackage{iftex}
     \ifPDFTeX
     	\usepackage[T1]{fontenc}
@@ -155,8 +155,13 @@
     \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
     % Document parameters
     % Document title
-    \title{ProjectReport}
-    
+    \title{PageRank-Based Movie Recommendation System}
+    \author{
+        Aayush Sabharwal
+        \and
+        Harsh Priyadarshi
+    }
+    \date{November 2020}
     
     
     
@@ -392,10 +397,26 @@ constructed by taking a linear combination of various similarity
 matrices made using different similarity parameters, such as director,
 tags, genre, etc. The coefficients of the linear combination were
 calculated by running gradient descent multiple times to minimize an
-error function. We used anonymised user ratings data to subset this
+error function. We used anonymized user ratings data to subset this
 matrix based on user input, run PageRank on the subset, and return the
 highest recommended movies. We also built a GUI for this application.
 
+\href{https://github.com/AayushSabharwal/recommender-system}{GitHub
+Repository}
+
+\href{https://drive.google.com/file/d/1e2L14HxKfuI4LJUIBTAo6CSgmtm1x7se/view?usp=sharing}{Drive
+Link} (Included since we have several large matrix files that could not
+be uploaded to GitHub. This does not contain any intermediate matrices.)
+
+\href{https://youtu.be/CDz3vVZKoCM}{Demo Video}
+
+\begin{figure}
+    \centering
+    \includegraphics[height=8.5cm]{gui.png}
+\end{figure}
+\begin{center}
+    \textit{Fig: A screenshot of the recommendation system GUI}
+\end{center}
     \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
 
@@ -473,6 +494,13 @@ used to get the webpage in HTML format, then \texttt{BeautifulSoup4} was
 used to scrape the required data. The script for the scraper can be
 found in \texttt{scraped-movies-data/scraper/web\_scraper.py}.
 
+\begin{figure}
+    \centering
+    \includegraphics[]{language_count.png}
+\end{figure}
+\begin{center}
+    \textit{Fig: Bar chart displaying frequency of the most common languages in the dataset, on a logarithmic scale}
+\end{center}
 To clean the movie data and collect it into a proper format,
 \texttt{pandas} and \texttt{re} libraries were used to handle the csv
 files and process text patterns respectively. This process is present in
@@ -524,6 +552,13 @@ the average weight along the paths (\(A_{u, v}\)), and inversely
 proportional to the number of edges in the paths (\(E_{u, v}\)).
 Mathematically, \[S_{u,v} = \frac{N_{u, v}A_{u, v}}{E_{u, v}}\]
 
+\begin{figure}
+\centering
+    \includegraphics[]{graph.png}
+\end{figure}
+\begin{center}
+    \textit{Fig: Graph of user ratings, where blue nodes at centers are users, red nodes are movies, and edges are weighted by the rating given by user to a movie (shown through colour, green edges indicate higher ratings). This only includes 3 users and the movies they rated.}
+\end{center}
 This approach quickly fell apart when we constructed the graph, which
 turned out to be extremely slow to process, and impossible to run many
 centrality or relatedness algorithms on simply due to the large memory
@@ -640,11 +675,12 @@ the movie can be found in \texttt{user\_id.py}.
 
 A collection is then formed comprising of all the movies rated by all
 the given users, along with the input movies. These \texttt{movieId}
-values are given to the \texttt{pagerank} function, which subsets the
-adjacency matrix accordingly and performs PageRank using the power
-iteration method. To improve locality of results, a reset probability is
-introduced. Each column corresponding to the movies given by the user is
-given an additional 0.15 weightage, by the following formula
+values are given to the \texttt{pagerank} function. The function subsets
+the adjacency matrix accordingly, makes it Markovian, and performs
+PageRank using the power iteration method. To improve locality of
+results, a reset probability is introduced. Each column corresponding to
+the movies given by the user is given an additional 0.15 weightage, by
+the following formula
 
 \[ M' = (1-\alpha)M+\alpha R \] Where \(M'\) is the final matrix on
 which PageRank is performed, \(M\) is the raw subsetted matrix, \(R\) is
@@ -654,12 +690,11 @@ input movies as 1, and \(\alpha=0.15\) is the reset probability
 The starting vector for power iteration is taken as
 \(v=(1, 0, 0, ..., 0)\), and convergence is achieved when the maximum
 difference between corresponding values in successive iterations of
-\(v\) is less than a configurable tolerance \(\epsilon\).
-Mathematically, convergence occurs if
-\[ max(v_i-v_{i-1}) \leq \epsilon \] Where \(v_i\) is the value of the
-vector \(v\) after the \(i\)th iteration. A cap on iterations was
-implemented as well, to prevent an infinite loop in the rare case that
-convergence does not occur.
+\(v\) is less than tolerance \(\epsilon = 10^{-4}\). Mathematically,
+convergence occurs if \[ max(v_i-v_{i-1}) \leq \epsilon \] Where \(v_i\)
+is the value of the vector \(v\) after the \(i\)th iteration. A cap of
+1000 on iterations was implemented as well, to prevent an infinite loop
+in the rare case that convergence does not occur.
 
 The function returns a dictionary mapping \texttt{movieId} to PageRank,
 of which the 5 largest values are the recommended movies for the given
@@ -672,6 +707,9 @@ Used}\label{tools-and-libraries-used}}
 All the code for this project is written in Python 3.8.5. The libraries
 used in this project and their usages are as follows
 
+(Last column denotes whether library is required to run the recommender
+system through \texttt{gui.py})
+
 \begin{longtable}[]{@{}llll@{}}
 \toprule
 \begin{minipage}[b]{0.22\columnwidth}\raggedright
@@ -681,7 +719,7 @@ Usage\strut
 \end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\raggedright
 Link\strut
 \end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\raggedright
-Required To Run\strut
+Required\strut
 \end{minipage}\tabularnewline
 \midrule
 \endhead
@@ -701,7 +739,7 @@ Yes\strut
 \end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
 For data visualizations\strut
 \end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
-https://matplotlib.org/\strut
+\url{https://matplotlib.org/}\strut
 \end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
 No\strut
 \end{minipage}\tabularnewline
@@ -788,14 +826,14 @@ dataset\strut
 Yes\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.22\columnwidth}\raggedright
-\texttt{python-Levenshtein==0.12.0}\strut
+\texttt{python-Levenshtein}\strut
 \end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
 Used by \texttt{fuzzywuzzy} to accelerate calculation of Levenshtein
 distance\strut
 \end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
 \url{https://github.com/ztane/python-Levenshtein/}\strut
 \end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
-Optional (Faster if included)\strut
+Yes\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.22\columnwidth}\raggedright
 \texttt{PyQt5}\strut
@@ -844,6 +882,10 @@ This tends to bias the recommendations towards movies with these genres,
 since they are the ones subsetted. Currently, movies without these tags
 have better recommendations.
 
+\includegraphics[]{genre_count.png}
+\begin{center}
+    \textit{Fig: Bar chart displaying frequency of the top 10 genres in the dataset we used, on a linear scale. Visibly, Comedy and Drama genres are exceptionally frequent}
+\end{center}
     \hypertarget{conclusion}{%
 \section{Conclusion}\label{conclusion}}
 
