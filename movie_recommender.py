@@ -43,7 +43,10 @@ def pagerank(movie_ids: List[int], input_ids: List[int], epsilon: float = 1e-4, 
     input_inds = np.array([movie_ids.index(i) for i in input_ids])
     # load and subset matrix
     with np.load('final_adj_mat.npz', 'r') as npf:
-        mat = npf['arr_0'][np.vstack(inds), inds]*(1-reset_chance)
+        mat = npf['arr_0'][np.vstack(inds), inds]
+    for i in range(mat.shape[0]):
+        mat[i, :] /= mat[i, :].sum()
+    mat *= (1-reset_chance)
     # handle reset probability
     mat[:, input_inds] += reset_chance
     # initial vector is [1 0 0 0 ...]
